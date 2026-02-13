@@ -27,7 +27,15 @@ export default function LoginPage() {
         password,
       })
 
-      if (error) throw error
+      if (error) {
+        // Check if it's an email confirmation error
+        if (error.message.toLowerCase().includes('email not confirmed')) {
+          setError('Please check your email and click the confirmation link before signing in.')
+        } else {
+          setError(error.message || 'Invalid login credentials')
+        }
+        return
+      }
 
       router.push('/dashboard')
       router.refresh()

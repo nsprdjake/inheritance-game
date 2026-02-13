@@ -15,6 +15,7 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,21 +35,70 @@ export default function SignupPage() {
 
     try {
       const supabase = createClient()
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
       })
 
       if (error) throw error
 
-      // Redirect to onboarding
-      router.push('/onboarding')
-      router.refresh()
+      // Check if email confirmation is required
+      if (data?.user && !data.session) {
+        setSuccess(true)
+      } else if (data?.session) {
+        // Auto-confirmed, redirect to onboarding
+        router.push('/onboarding')
+        router.refresh()
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to create account')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-md animate-fade-in">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold gradient-text mb-2">
+              Check Your Email
+            </h1>
+            <p className="text-white/60">We've sent you a confirmation link</p>
+          </div>
+
+          <Card>
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-indigo-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+
+              <p className="text-white/80">
+                We sent a confirmation email to <strong className="text-white">{email}</strong>
+              </p>
+
+              <p className="text-sm text-white/60">
+                Click the link in the email to activate your account, then you can sign in.
+              </p>
+
+              <div className="pt-4">
+                <Link href="/auth/login">
+                  <Button className="w-full">
+                    Go to Sign In
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   return (
