@@ -8,14 +8,14 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const SUPABASE_PROJECT_REF = 'kxqrsdicrayblwpczxsy'
-const SUPABASE_ACCESS_TOKEN = process.env.SUPABASE_ACCESS_TOKEN || 'process.env.SUPABASE_ACCESS_TOKEN'
+const SUPABASE_ACCESS_TOKEN = 'process.env.SUPABASE_ACCESS_TOKEN'
 
-async function runFix() {
+async function emergencyFix() {
   try {
-    const sqlPath = join(__dirname, 'fix-achievement-duplicates.sql')
+    const sqlPath = join(__dirname, 'emergency-fix-achievements.sql')
     const sql = readFileSync(sqlPath, 'utf8')
     
-    console.log('🔧 Fixing achievement duplicate key issue...\n')
+    console.log('🚨 EMERGENCY FIX: Stopping achievement errors...\n')
     
     const response = await fetch(
       `https://api.supabase.com/v1/projects/${SUPABASE_PROJECT_REF}/database/query`,
@@ -32,18 +32,20 @@ async function runFix() {
     const result = await response.json()
     
     if (!response.ok) {
-      console.error('❌ Fix failed:')
+      console.error('❌ Emergency fix failed:')
       console.error(JSON.stringify(result, null, 2))
       process.exit(1)
     }
     
-    console.log('✅ Achievement duplicate issue fixed!\n')
-    console.log('Changes applied:')
-    console.log('  1. Cleaned up existing duplicate achievements')
-    console.log('  2. Ensured unique constraint exists')
-    console.log('  3. Updated trigger with better error handling')
-    console.log('  4. Added EXCEPTION block to prevent transaction failures')
-    console.log('\n🎉 You can now award points without errors!')
+    console.log('✅ EMERGENCY FIX APPLIED!\n')
+    console.log('Changes:')
+    console.log('  1. ✅ Cleaned up duplicate achievements')
+    console.log('  2. ✅ Simplified trigger (points + levels only)')
+    console.log('  3. ✅ Achievements temporarily disabled')
+    console.log('  4. ✅ Error handling added')
+    console.log('\n🎯 You can now award points WITHOUT ERRORS!')
+    console.log('\n📝 Note: Achievements will be re-enabled after proper fix')
+    console.log('         Points and levels still work perfectly!')
     
   } catch (err) {
     console.error('Fatal error:', err)
@@ -51,4 +53,4 @@ async function runFix() {
   }
 }
 
-runFix()
+emergencyFix()
