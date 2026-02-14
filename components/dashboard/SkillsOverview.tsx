@@ -3,7 +3,7 @@
 import { Kid } from '@/lib/types/database'
 import { getAllSkills } from '@/lib/utils/skills'
 import { motion } from 'framer-motion'
-import SkillBadge from '@/components/ui/SkillBadge'
+import SkillMeter from '@/components/ui/SkillMeter'
 import Card from '@/components/ui/Card'
 
 interface Props {
@@ -31,7 +31,7 @@ export default function SkillsOverview({ kid, showTitle = true }: Props) {
         </div>
       )}
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {Object.values(skills).map((skill, index) => (
           <motion.div
             key={skill.type}
@@ -39,11 +39,10 @@ export default function SkillsOverview({ kid, showTitle = true }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <SkillBadge
+            <SkillMeter
               skill={skill.type}
               points={skill.points}
-              showProgress={true}
-              size="md"
+              showLevel={true}
             />
           </motion.div>
         ))}
