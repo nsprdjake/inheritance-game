@@ -77,6 +77,37 @@ export default async function DashboardPage() {
     .in('status', ['pending_approval', 'completed'])
     .order('completed_at', { ascending: false })
 
+  // Fetch family-wide gamification stats
+  const totalPoints = kidsWithBalances.reduce((sum, kid) => sum + (kid.total_earned || 0), 0)
+  
+  const { count: achievementCount } = await supabase
+    .from('achievements')
+    .select('*', { count: 'exact', head: true })
+    .in('kid_id', kidsWithBalances.map(k => k.id))
+  
+  const { data: streaks } = await supabase
+    .from('streaks')
+    .select('current_streak, longest_streak')
+    .in('kid_id', kidsWithBalances.map(k => k.id))
+  
+  const activeStreaks = streaks?.filter(s => s.current_streak > 0).length || 0
+  const longestStreak = Math.max(...(streaks?.map(s => s.longest_streak) || [0]))
+  
+  const topKid = kidsWithBalances.length > 0
+    ? kidsWithBalances.reduce((max, kid) => 
+        (kid.total_earned || 0) > (max.total_earned || 0) ? kid : max
+      )
+    : null
+  
+  const familyStats = {
+    totalKids: kidsWithBalances.length,
+    totalPoints,
+    totalAchievements: achievementCount || 0,
+    activeStreaks,
+    longestStreak,
+    topKid: topKid ? { name: topKid.name, points: topKid.total_earned || 0 } : null
+  }
+
   return (
     <DashboardClient
       family={family}
@@ -86,6 +117,7 @@ export default async function DashboardPage() {
       pendingTasks={pendingTasks || []}
       userId={user.id}
       familyId={userData.family_id}
+      familyStats={familyStats}
     />
   )
 }
