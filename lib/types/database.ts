@@ -22,6 +22,8 @@ export interface Kid {
   age?: number
   avatar?: string
   user_id?: string
+  level?: 'bronze' | 'silver' | 'gold'
+  total_earned?: number
   created_at: string
   updated_at: string
 }
@@ -55,10 +57,38 @@ export interface FamilySettings {
   updated_at: string
 }
 
+export interface Achievement {
+  id: string
+  kid_id: string
+  family_id: string
+  achievement_type: string
+  title: string
+  description?: string
+  icon?: string
+  unlocked_at: string
+  created_at: string
+}
+
+export interface Streak {
+  id: string
+  kid_id: string
+  family_id: string
+  current_streak: number
+  longest_streak: number
+  last_activity_date: string
+  created_at: string
+  updated_at: string
+}
+
 export interface KidWithBalance extends Kid {
   balance: number
 }
 
 export interface TransactionWithKid extends Transaction {
   kid?: Kid
+}
+
+export interface KidWithGameData extends KidWithBalance {
+  achievements?: Achievement[]
+  streak?: Streak
 }
