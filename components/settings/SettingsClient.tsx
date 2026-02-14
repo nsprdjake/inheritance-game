@@ -8,6 +8,7 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import { Family, Kid, FamilySettings } from '@/lib/types/database'
 import Link from 'next/link'
+import CreateKidAccount from './CreateKidAccount'
 
 interface Props {
   family: Family | null
@@ -352,25 +353,34 @@ export default function SettingsClient({ family, kids, settings, familyId }: Pro
                     </Button>
                   </div>
                 ) : (
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-semibold text-white">{kid.name}</p>
-                      <p className="text-sm text-white/60">{kid.age} years old</p>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-semibold text-white">{kid.name}</p>
+                        <p className="text-sm text-white/60">{kid.age} years old</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => startEditingKid(kid)}
+                          className="text-indigo-400 hover:text-indigo-300 transition-colors text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteKid(kid.id)}
+                          className="text-red-400 hover:text-red-300 transition-colors text-sm"
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => startEditingKid(kid)}
-                        className="text-indigo-400 hover:text-indigo-300 transition-colors text-sm"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteKid(kid.id)}
-                        className="text-red-400 hover:text-red-300 transition-colors text-sm"
-                      >
-                        Remove
-                      </button>
-                    </div>
+                    
+                    {/* Kid account creation */}
+                    <CreateKidAccount 
+                      kid={kid} 
+                      familyId={familyId}
+                      onSuccess={() => router.refresh()}
+                    />
                   </div>
                 )}
               </div>

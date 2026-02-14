@@ -97,6 +97,15 @@ export default function LoginPage() {
               Sign up
             </Link>
           </div>
+
+          <div className="mt-4 p-4 rounded-lg bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-white/10 text-center">
+            <p className="text-sm text-white/70 mb-2">👦 👧 Are you a kid?</p>
+            <Link href="/auth/kid-login">
+              <Button variant="secondary" className="w-full">
+                Kid Login 🎮
+              </Button>
+            </Link>
+          </div>
         </Card>
       </div>
     </div>
