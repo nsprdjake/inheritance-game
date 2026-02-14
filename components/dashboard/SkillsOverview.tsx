@@ -32,20 +32,38 @@ export default function SkillsOverview({ kid, showTitle = true }: Props) {
       )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {Object.values(skills).map((skill, index) => (
-          <motion.div
-            key={skill.type}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <SkillMeter
-              skill={skill.type}
-              points={skill.points}
-              showLevel={true}
-            />
-          </motion.div>
-        ))}
+        {Object.values(skills).map((skill, index) => {
+          // Calculate XP range for current level
+          const getMaxXP = () => {
+            if (skill.level === 'bronze') return 100
+            if (skill.level === 'silver') return 200
+            return 300 // gold
+          }
+          
+          const getLevelNumber = () => {
+            if (skill.level === 'gold') return 3
+            if (skill.level === 'silver') return 2
+            return 1
+          }
+          
+          return (
+            <motion.div
+              key={skill.type}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <SkillMeter
+                skillName={skill.name}
+                currentXP={skill.points}
+                maxXP={getMaxXP()}
+                level={getLevelNumber()}
+                icon={skill.emoji}
+                color={skill.level}
+              />
+            </motion.div>
+          )
+        })}
       </div>
       
       {/* Motivational tip */}

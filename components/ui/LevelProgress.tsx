@@ -21,7 +21,8 @@ export default function LevelProgress({ currentLevel, currentXP, nextLevelXP, ne
   }, [currentXP, nextLevelXP])
   
   const getLevelIcon = (level: string) => {
-    switch (level.toLowerCase()) {
+    const levelLower = level?.toLowerCase() || 'bronze'
+    switch (levelLower) {
       case 'gold': return '🏆'
       case 'silver': return '🥈'
       default: return '🥉'
@@ -29,7 +30,8 @@ export default function LevelProgress({ currentLevel, currentXP, nextLevelXP, ne
   }
   
   const getLevelColor = (level: string) => {
-    switch (level.toLowerCase()) {
+    const levelLower = level?.toLowerCase() || 'bronze'
+    switch (levelLower) {
       case 'gold': return 'from-yellow-400 via-amber-500 to-orange-500'
       case 'silver': return 'from-gray-300 via-slate-400 to-gray-500'
       default: return 'from-amber-600 via-orange-500 to-amber-700'
@@ -37,7 +39,8 @@ export default function LevelProgress({ currentLevel, currentXP, nextLevelXP, ne
   }
   
   const getLevelGlow = (level: string) => {
-    switch (level.toLowerCase()) {
+    const levelLower = level?.toLowerCase() || 'bronze'
+    switch (levelLower) {
       case 'gold': return '0 0 30px rgba(251, 191, 36, 0.6)'
       case 'silver': return '0 0 30px rgba(203, 213, 225, 0.5)'
       default: return '0 0 30px rgba(251, 146, 60, 0.4)'

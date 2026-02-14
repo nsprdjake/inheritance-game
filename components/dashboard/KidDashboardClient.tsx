@@ -157,9 +157,10 @@ export default function KidDashboardClient({
               {levelInfo.next && (
                 <div className="mt-6 max-w-md mx-auto">
                   <LevelProgress 
-                    currentPoints={totalEarned}
-                    nextLevelPoints={levelInfo.nextPoints || 0}
-                    nextLevelName={levelInfo.next}
+                    currentLevel={levelInfo.name}
+                    currentXP={totalEarned}
+                    nextLevelXP={levelInfo.nextPoints || 0}
+                    nextLevel={levelInfo.next}
                   />
                   <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden hidden">
                     <motion.div
