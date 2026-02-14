@@ -16,6 +16,9 @@ import SkillsOverview from '@/components/dashboard/SkillsOverview'
 import SavingsGoalsWidget from '@/components/kid/SavingsGoalsWidget'
 import AgeTierBadge from '@/components/ui/AgeTierBadge'
 import { canAccessFeature, calculateAgeTier } from '@/lib/utils/skills'
+import AnimatedBalance from '@/components/ui/AnimatedBalance'
+import SkillMeter from '@/components/ui/SkillMeter'
+import LevelProgress from '@/components/ui/LevelProgress'
 
 interface Props {
   kid: KidWithBalance
@@ -128,41 +131,19 @@ export default function KidDashboardClient({
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10 animate-pulse" />
             
             <div className="relative z-10">
-              <p className="text-white/60 text-lg mb-4">Your Balance</p>
-              <motion.div 
-                className="mb-6"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-              >
-                <p className="text-7xl md:text-8xl font-bold gradient-text mb-2">
-                  {kid.balance}
-                </p>
-                <p className="text-2xl text-white/80">
-                  points
-                </p>
-              </motion.div>
+              <AnimatedBalance 
+                balance={kid.balance} 
+                dollarValue={dollarValue}
+                level={kid.level || 'bronze'}
+                showCelebration={false}
+              />
 
-              <div className="flex justify-center gap-4 flex-wrap">
-                <div className="inline-block px-6 py-3 rounded-xl bg-white/5 border border-white/10">
-                  <p className="text-white/60 text-sm">Worth</p>
-                  <p className="text-3xl font-bold text-green-400">
-                    ${dollarValue.toFixed(2)}
-                  </p>
-                </div>
-
-                <div className={`inline-block px-6 py-3 rounded-xl bg-gradient-to-br ${levelInfo.color} border border-white/20`}>
-                  <p className="text-white/80 text-sm">Level</p>
-                  <p className="text-3xl font-bold text-white">
-                    {levelInfo.emoji} {levelInfo.name}
-                  </p>
-                </div>
-
+              <div className="flex justify-center gap-4 flex-wrap mt-6">
                 {streak && streak.current_streak > 0 && (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="inline-block px-6 py-3 rounded-xl bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30"
+                    className="inline-block px-6 py-3 rounded-xl glass-effect"
                   >
                     <p className="text-white/80 text-sm">Streak</p>
                     <p className="text-3xl font-bold text-orange-400">
@@ -175,11 +156,12 @@ export default function KidDashboardClient({
               {/* Progress to next level */}
               {levelInfo.next && (
                 <div className="mt-6 max-w-md mx-auto">
-                  <div className="flex justify-between text-sm text-white/60 mb-2">
-                    <span>{totalEarned} total earned</span>
-                    <span>Next: {levelInfo.next} ({levelInfo.nextPoints})</span>
-                  </div>
-                  <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+                  <LevelProgress 
+                    currentPoints={totalEarned}
+                    nextLevelPoints={levelInfo.nextPoints || 0}
+                    nextLevelName={levelInfo.next}
+                  />
+                  <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${Math.min(progressToNext, 100)}%` }}
