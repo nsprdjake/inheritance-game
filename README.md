@@ -1,189 +1,224 @@
-# Inheritance Game 🎮
+# 🎮 Inheritance Game - Gamified Point System for Families
 
-A beautiful, multi-tenant SaaS platform for gamifying allowance and inheritance for kids. Built with Next.js 14, Supabase, and Tailwind CSS.
+A modern, gamified point system that helps families manage chores, rewards, and allowances.
 
-## Features
+## 🌟 Features
 
-### MVP Features
-- **Multi-tenant Architecture**: Complete family isolation with Row Level Security
-- **Authentication**: Secure signup/login with Supabase Auth
-- **Onboarding Wizard**: Beautiful 4-step setup process
-  - Family information
-  - Add kids
-  - Configure settings (themes, point values)
-  - Review and launch
-- **Admin Dashboard**: 
-  - View all kids and balances
-  - Award points with quick presets
-  - Recent activity feed
-  - Family statistics
-- **Kid Dashboard**: 
-  - See current point balance
-  - Dollar value conversion
-  - Transaction history
-  - Placeholders for future quests & rewards
-- **Settings Panel**:
-  - Edit family name
-  - Choose themes (Modern, Pirates, Space, Medieval)
-  - Configure point values (small/medium/large tasks)
-  - Set points-to-dollars conversion rate
-  - Manage kids (add/edit/remove)
+### For Parents
+- ⚡ **Quick-Award Buttons** - Award points with one click (small/medium/large tasks)
+- 🔴 **Point Deduction** - Remove points for broken rules
+- 📊 **Activity Dashboard** - Track all family transactions in real-time
+- 👨‍👩‍👧‍👦 **Multi-Kid Management** - Manage all your kids from one dashboard
+- 🏆 **Level System** - Watch your kids progress through bronze, silver, and gold tiers
 
-### Design
-- **Dark glass-card aesthetic** inspired by Memory Palace
-- **Gradient accents** and smooth animations
-- **Mobile-first responsive** design
-- **Beautiful UI** with polished interactions
+### For Kids
+- 💰 **Big Balance Display** - See your points at a glance
+- 🏆 **Achievements** - Unlock badges as you earn points
+- 🔥 **Streak Tracking** - Build consecutive days of earning
+- 🎁 **Reward Calculator** - See what you can afford right now
+- 📊 **Transaction History** - Track all your earnings and spendings
 
-## Tech Stack
+### Gamification
+- 🥉 **Bronze Level** - Starting level (0-199 points earned)
+- 🥈 **Silver Level** - Intermediate (200-499 points earned)
+- 🏆 **Gold Level** - Expert (500+ points earned)
+- 🎯 **Achievement System** - Auto-unlock badges at milestones
+- 🔥 **Daily Streaks** - Earn consecutively to build streaks
+- 🎊 **Confetti Celebrations** - Visual feedback on awards
 
-- **Framework**: Next.js 14 (App Router, TypeScript)
-- **Database & Auth**: Supabase (PostgreSQL + Auth)
-- **Styling**: Tailwind CSS with custom glass-morphism components
-- **Multi-tenancy**: Row Level Security policies in Supabase
+## 🚀 Live Demo
 
-## Getting Started
+**Production URL**: https://rp1.nsprd.com
 
-### Prerequisites
+## 📋 Quick Start
 
-- Node.js 18+
-- npm or yarn
-- Supabase account
+### For First-Time Setup:
 
-### Installation
+1. **Apply Database Migration** (Required - one time only)
+   - See: `QUICK_START.md` for detailed instructions
+   - Or: `MIGRATION_INSTRUCTIONS.md` for step-by-step guide
 
-1. Clone the repository:
+2. **Sign Up**
+   - Create parent/admin account
+   - Complete onboarding (family name, kids)
+
+3. **Start Awarding Points**
+   - Log in to parent dashboard
+   - Click quick-award buttons on kid cards
+   - Watch the confetti! 🎊
+
+### For Development:
+
 ```bash
-git clone <your-repo-url>
+# Clone the repo
+git clone https://github.com/nsprdjake/inheritance-game.git
 cd inheritance-game
-```
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
-```
 
-3. Set up environment variables:
-```bash
+# Set up environment variables
 cp .env.example .env.local
-```
+# Edit .env.local with your Supabase credentials
 
-Edit `.env.local` and add your Supabase credentials:
-```
-NEXT_PUBLIC_SUPABASE_URL=your-project-url.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-```
-
-4. Set up the database:
-   - Go to your Supabase project
-   - Navigate to the SQL Editor
-   - Run the migration file: `supabase/migrations/20260212_initial_schema.sql`
-
-5. Run the development server:
-```bash
-npm run dev
-```
-
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Database Schema
-
-### Tables
-
-- **families**: Tenant isolation (each family is a separate tenant)
-- **users**: Links to Supabase auth, references family, stores role
-- **kids**: Kid profiles (name, age, avatar, family_id)
-- **transactions**: Point awards/redemptions with full audit trail
-- **family_settings**: Customizable settings (theme, point values, conversion rate)
-
-### Security
-
-All tables are protected with Row Level Security (RLS) policies:
-- Users can only access data from their own family
-- Admins have full control over their family
-- Kids can only view their own data
-
-## Project Structure
-
-```
-inheritance-game/
-├── app/
-│   ├── auth/           # Authentication pages
-│   ├── dashboard/      # Admin dashboard
-│   ├── kid/            # Kid dashboard
-│   ├── onboarding/     # Multi-step onboarding
-│   ├── settings/       # Settings management
-│   ├── layout.tsx      # Root layout
-│   ├── page.tsx        # Home redirect
-│   └── globals.css     # Global styles
-├── components/
-│   ├── dashboard/      # Dashboard components
-│   ├── onboarding/     # Onboarding step components
-│   ├── settings/       # Settings components
-│   └── ui/             # Reusable UI components
-├── lib/
-│   ├── supabase/       # Supabase client utilities
-│   └── types/          # TypeScript types
-├── supabase/
-│   └── migrations/     # Database migrations
-└── middleware.ts       # Auth & routing middleware
-```
-
-## Environment Variables
-
-Required environment variables:
-
-- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
-
-## Development
-
-```bash
-# Run development server
+# Run dev server
 npm run dev
 
+# Open browser
+open http://localhost:3000
+```
+
+## 🗄️ Database
+
+Using **Supabase** (PostgreSQL) with Row Level Security (RLS) for multi-tenant isolation.
+
+### Tables:
+- `families` - Tenant isolation
+- `users` - Parent/kid accounts
+- `kids` - Kid profiles with levels
+- `transactions` - Point awards/deductions
+- `achievements` - Unlocked badges
+- `streaks` - Consecutive day tracking
+- `family_settings` - Theme and point values
+
+### Apply Migration:
+```bash
+# Copy SQL to clipboard
+cat supabase/migrations/20260213_gamification.sql | pbcopy
+
+# Paste into Supabase SQL Editor and run
+# URL: https://supabase.com/dashboard/project/YOUR_PROJECT/sql/new
+```
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: Supabase Auth
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Deployment**: Vercel
+- **Language**: TypeScript
+
+## 📦 Dependencies
+
+```json
+{
+  "next": "14.2.35",
+  "react": "^18",
+  "react-dom": "^18",
+  "@supabase/supabase-js": "^2.95.3",
+  "@supabase/ssr": "^0.8.0",
+  "framer-motion": "latest",
+  "canvas-confetti": "latest",
+  "tailwindcss": "^3.4.1",
+  "typescript": "^5"
+}
+```
+
+## 🎨 Design System
+
+- **Glass-card aesthetic** - Frosted glass effect with blur
+- **Dark theme** - Modern gradient backgrounds
+- **Responsive** - Mobile-first design
+- **Animations** - Smooth transitions throughout
+
+### Color Palette:
+- Primary: Indigo 500 (#6366f1)
+- Secondary: Purple 500 (#a855f7)
+- Accent: Pink 400 (#f472b6)
+- Success: Green 400 (#4ade80)
+- Error: Red 400 (#f87171)
+
+## 🔒 Security
+
+### Multi-Tenant Isolation
+- **Row Level Security (RLS)** on all tables
+- **Non-recursive policies** for performance
+- **Family-scoped queries** - No cross-family data leaks
+
+### Authentication
+- Email/password via Supabase Auth
+- Email confirmation on signup
+- Secure session management
+
+## 📱 Mobile Support
+
+Fully responsive design tested on:
+- iPhone (Safari)
+- Android (Chrome)
+- Tablets (iPad)
+
+## 🧪 Testing
+
+See `DEPLOYMENT_CHECKLIST.md` for full testing guide.
+
+### Quick Test:
+```bash
 # Build for production
 npm run build
 
-# Start production server
+# Run production server
 npm start
-
-# Lint code
-npm run lint
 ```
 
-## Deployment
+## 📚 Documentation
 
-This project is ready to deploy to:
-- Vercel (recommended for Next.js)
-- Netlify
-- Any platform supporting Next.js 14+
+- `PHASE1_SUMMARY.md` - What's new in Phase 1
+- `QUICK_START.md` - Fast setup guide
+- `MIGRATION_INSTRUCTIONS.md` - Database migration guide
+- `DEPLOYMENT_CHECKLIST.md` - Full deployment checklist
 
-### Vercel Deployment
+## 🗺️ Roadmap
 
-1. Push your code to GitHub
-2. Import project to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy!
+### Phase 1 (✅ SHIPPED)
+- Gamification system (achievements, streaks, levels)
+- Parent dashboard (quick-awards, deductions, activity feed)
+- Kid dashboard (balance, achievements, reward calculator)
+- Visual polish (animations, loading states, empty states)
+- Security (non-recursive RLS policies)
 
-## Future Features
+### Phase 2 (Coming Soon)
+- 🎁 Rewards Store (redeemable items)
+- 📋 Chore assignment system
+- 📊 Advanced analytics & charts
+- 🎮 Quests & challenges
+- 👨‍👩‍👧‍👦 Family leaderboard
+- 📧 Email notifications
+- 🔔 Push notifications
 
-- **Quests System**: Daily/weekly tasks kids can complete
-- **Rewards Store**: Kids can redeem points for real rewards
-- **Parent Role**: Multiple adults managing the family
-- **Avatars**: Custom kid avatars
-- **Notifications**: Email/push notifications for awards
-- **Analytics**: Charts and insights on earning patterns
-- **Mobile App**: Native iOS/Android apps
+### Phase 3 (Future)
+- 💳 Payment integration (Stripe)
+- 📱 Native mobile app
+- 🎨 Theme customization
+- 🌍 Multi-language support
+- 📈 Export & reporting
 
-## Contributing
+## 🐛 Known Issues
 
-This is a private project. For questions or suggestions, contact the project owner.
+- Migration must be applied manually (no automated migration runner)
+- Achievement updates are server-side only (no real-time sync)
 
-## License
+## 🤝 Contributing
+
+This is a private project. Contact owner for access.
+
+## 📄 License
 
 Private - All rights reserved
 
+## 🙏 Credits
+
+Built with ❤️ by an autonomous AI agent for Jake's family.
+
+## 📞 Support
+
+- Check documentation in repo
+- Review `QUICK_START.md` for common issues
+- See `DEPLOYMENT_CHECKLIST.md` for troubleshooting
+
 ---
 
-Built with ❤️ using Next.js and Supabase
+**Last Updated**: February 13, 2026
+**Version**: 1.0.0 (Phase 1)
+**Status**: ✅ Production Ready (after migration)
