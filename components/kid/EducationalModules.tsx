@@ -2,10 +2,12 @@
 
 import { useState } from 'react'
 import { EducationalModule, ModuleProgressWithModule, Kid } from '@/lib/types/database'
-import { getSkillEmoji } from '@/lib/utils/skills'
+import { getSkillEmoji, calculateAgeTier } from '@/lib/utils/skills'
 import { motion, AnimatePresence } from 'framer-motion'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
+import ModulePlayer from './ModulePlayer'
+import { useRouter } from 'next/navigation'
 
 interface Props {
   modules: EducationalModule[]
@@ -15,10 +17,11 @@ interface Props {
 }
 
 export default function EducationalModules({ modules, progress, kid, familyId }: Props) {
-  const [selectedModule, setSelectedModule] = useState<string | null>(null)
+  const [selectedModule, setSelectedModule] = useState<EducationalModule | null>(null)
+  const router = useRouter()
 
   // Filter modules by age tier
-  const ageTier = kid.age_tier || 1
+  const ageTier = kid.age_tier || calculateAgeTier(kid.birthdate)
   const availableModules = modules.filter(module => 
     module.is_active && 
     module.min_age_tier <= ageTier &&
@@ -37,13 +40,13 @@ export default function EducationalModules({ modules, progress, kid, familyId }:
     return progress.find(p => p.module_id === moduleId)
   }
 
-  const startModule = async (moduleId: string) => {
+  const startModule = async (module: EducationalModule) => {
     try {
       const { createClient } = await import('@/lib/supabase/client')
       const supabase = createClient()
       
       // Create or update progress
-      const existing = getModuleProgress(moduleId)
+      const existing = getModuleProgress(module.id)
       
       if (existing) {
         // Update last_accessed_at
@@ -56,18 +59,24 @@ export default function EducationalModules({ modules, progress, kid, familyId }:
         await supabase
           .from('module_progress')
           .insert({
-            module_id: moduleId,
+            module_id: module.id,
             kid_id: kid.id,
             family_id: familyId,
             progress_percent: 0,
+            current_lesson: 0,
           })
       }
       
-      // TODO: Actually launch the module content
-      alert('Module launching! (Full implementation coming soon)')
+      // Open module player
+      setSelectedModule(module)
     } catch (err: any) {
       console.error('Failed to start module:', err)
     }
+  }
+
+  const handleModuleComplete = () => {
+    setSelectedModule(null)
+    router.refresh()
   }
 
   if (availableModules.length === 0) {
@@ -82,7 +91,8 @@ export default function EducationalModules({ modules, progress, kid, familyId }:
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <div className="space-y-6">
       {Object.entries(modulesBySkill).map(([skillType, skillModules]) => (
         <div key={skillType}>
           <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
@@ -168,10 +178,10 @@ export default function EducationalModules({ modules, progress, kid, familyId }:
                       <Button
                         variant={isCompleted ? 'ghost' : isInProgress ? 'secondary' : 'primary'}
                         size="sm"
-                        onClick={() => startModule(module.id)}
+                        onClick={() => startModule(module)}
                         className="w-full"
                       >
-                        {isCompleted ? '✓ Completed' : isInProgress ? 'Continue →' : 'Start Learning'}
+                        {isCompleted ? '✓ Review' : isInProgress ? 'Continue →' : 'Start Learning'}
                       </Button>
                     </div>
                   </Card>
@@ -181,6 +191,19 @@ export default function EducationalModules({ modules, progress, kid, familyId }:
           </div>
         </div>
       ))}
-    </div>
+      </div>
+
+      {/* Module Player Modal */}
+      {selectedModule && (
+        <ModulePlayer
+          module={selectedModule}
+          progress={getModuleProgress(selectedModule.id) || null}
+          kid={kid}
+          familyId={familyId}
+          onClose={() => setSelectedModule(null)}
+          onComplete={handleModuleComplete}
+        />
+      )}
+    </>
   )
 }
