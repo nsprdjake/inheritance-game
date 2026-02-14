@@ -1,0 +1,533 @@
+/* 
+  🎨 LYNE DESIGN SYSTEM
+  
+  A magical, game-like financial platform for families
+  Think: Duolingo meets Animal Crossing meets Headspace
+*/
+
+/* ============================================
+   COLOR PALETTE
+   ============================================ */
+
+:root {
+  /* Base colors - vibrant and warm */
+  --background-deep: #0A0E27;
+  --background-mid: #141B3D;
+  --background-light: #1E2749;
+  
+  /* Primary gradient - sunset vibes */
+  --primary-start: #FF6B9D;
+  --primary-mid: #C23AFF;
+  --primary-end: #4F46E5;
+  
+  /* Secondary gradient - ocean vibes */
+  --secondary-start: #00D4FF;
+  --secondary-mid: #7B61FF;
+  --secondary-end: #5B21B6;
+  
+  /* Accent colors */
+  --accent-gold: #FFD700;
+  --accent-mint: #4ADE80;
+  --accent-peach: #FBBF24;
+  --accent-coral: #FB7185;
+  --accent-sky: #38BDF8;
+  
+  /* Skill tier colors */
+  --bronze: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+  --silver: linear-gradient(135deg, #E8E8E8 0%, #A8A8A8 100%);
+  --gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  
+  /* Glass effects */
+  --glass-light: rgba(255, 255, 255, 0.08);
+  --glass-medium: rgba(255, 255, 255, 0.12);
+  --glass-strong: rgba(255, 255, 255, 0.16);
+  
+  /* Text */
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+.display-xl {
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.display-lg {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.display-md {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.text-playful {
+  font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+}
+
+/* ============================================
+   GRADIENTS
+   ============================================ */
+
+.gradient-sunset {
+  background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-mid) 50%, var(--primary-end) 100%);
+}
+
+.gradient-ocean {
+  background: linear-gradient(135deg, var(--secondary-start) 0%, var(--secondary-mid) 50%, var(--secondary-end) 100%);
+}
+
+.gradient-joy {
+  background: linear-gradient(135deg, #FF6B9D 0%, #FBBF24 50%, #4ADE80 100%);
+}
+
+.gradient-magic {
+  background: linear-gradient(135deg, #C23AFF 0%, #4F46E5 50%, #38BDF8 100%);
+}
+
+.gradient-text-sunset {
+  background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-mid) 50%, var(--primary-end) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-ocean {
+  background: linear-gradient(135deg, var(--secondary-start) 0%, var(--secondary-mid) 50%, var(--secondary-end) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-rainbow {
+  background: linear-gradient(90deg, #FF6B9D 0%, #FBBF24 25%, #4ADE80 50%, #38BDF8 75%, #C23AFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbow-shift 3s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+
+@keyframes rainbow-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ============================================
+   GLASS CARDS
+   ============================================ */
+
+.card-glass {
+  background: var(--glass-light);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.card-glass-hover {
+  background: var(--glass-light);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-glass-hover:hover {
+  background: var(--glass-medium);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.card-glow {
+  position: relative;
+}
+
+.card-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 24px;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.card-glow:hover::before {
+  opacity: 1;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.btn-magic {
+  position: relative;
+  padding: 16px 32px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1.125rem;
+  background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 20px rgba(255, 107, 157, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-magic::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn-magic:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 8px 30px rgba(255, 107, 157, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-magic:hover::before {
+  left: 100%;
+}
+
+.btn-magic:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-ghost-glow {
+  position: relative;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  background: var(--glass-light);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-ghost-glow:hover {
+  background: var(--glass-medium);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(194, 58, 255, 0.3);
+}
+
+/* ============================================
+   SKILL BADGES
+   ============================================ */
+
+.badge-skill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.badge-bronze {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.2) 0%, rgba(139, 69, 19, 0.2) 100%);
+  border-color: rgba(205, 127, 50, 0.4);
+  color: #FFB86C;
+}
+
+.badge-silver {
+  background: linear-gradient(135deg, rgba(232, 232, 232, 0.2) 0%, rgba(168, 168, 168, 0.2) 100%);
+  border-color: rgba(232, 232, 232, 0.4);
+  color: #E8E8E8;
+}
+
+.badge-gold {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
+  border-color: rgba(255, 215, 0, 0.4);
+  color: #FFD700;
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+  }
+}
+
+/* ============================================
+   PROGRESS BARS
+   ============================================ */
+
+.progress-container {
+  position: relative;
+  width: 100%;
+  height: 16px;
+  background: var(--glass-light);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(90deg, var(--primary-start) 0%, var(--primary-end) 100%);
+  position: relative;
+  overflow: hidden;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.progress-bar-thick {
+  height: 24px;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    filter: blur(20px);
+  }
+  50% {
+    opacity: 0.8;
+    filter: blur(30px);
+  }
+}
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes scale-pop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slide-up-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 20s linear infinite;
+}
+
+.animate-scale-pop {
+  animation: scale-pop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-up {
+  animation: slide-up-fade 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stagger children animations */
+.stagger-children > * {
+  opacity: 0;
+  animation: slide-up-fade 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* ============================================
+   PARTICLE EFFECTS
+   ============================================ */
+
+.stars-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.stars-bg::before,
+.stars-bg::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.8),
+    100px 100px 0 rgba(255, 255, 255, 0.6),
+    200px 50px 0 rgba(255, 255, 255, 0.7),
+    300px 200px 0 rgba(255, 255, 255, 0.5),
+    400px 150px 0 rgba(255, 255, 255, 0.8),
+    500px 250px 0 rgba(255, 255, 255, 0.6),
+    600px 100px 0 rgba(255, 255, 255, 0.7);
+  animation: twinkle 5s ease-in-out infinite;
+}
+
+.stars-bg::after {
+  animation-delay: 2.5s;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* ============================================
+   SPECIAL EFFECTS
+   ============================================ */
+
+.glow-orb {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.glow-orb-pink {
+  background: var(--primary-start);
+  top: -150px;
+  left: -150px;
+}
+
+.glow-orb-purple {
+  background: var(--primary-mid);
+  bottom: -150px;
+  right: -150px;
+}
+
+.glow-orb-blue {
+  background: var(--secondary-start);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+@media (max-width: 640px) {
+  .display-xl {
+    font-size: clamp(2.5rem, 10vw, 4rem);
+  }
+  
+  .card-glass,
+  .card-glass-hover {
+    border-radius: 20px;
+  }
+  
+  .btn-magic {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+}
+
+/* ============================================
+   DARK MODE ENHANCEMENTS
+   ============================================ */
+
+body {
+  background: radial-gradient(ellipse at top, var(--background-mid) 0%, var(--background-deep) 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(255, 107, 157, 0.3);
+  color: white;
+}
