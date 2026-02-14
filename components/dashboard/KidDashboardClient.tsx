@@ -13,6 +13,7 @@ import AvailableTasks from '@/components/kid/AvailableTasks'
 import EducationalModules from '@/components/kid/EducationalModules'
 import ClaimedTasksList from '@/components/kid/ClaimedTasksList'
 import SkillsOverview from '@/components/dashboard/SkillsOverview'
+import SavingsGoalsWidget from '@/components/kid/SavingsGoalsWidget'
 import AgeTierBadge from '@/components/ui/AgeTierBadge'
 import { canAccessFeature, calculateAgeTier } from '@/lib/utils/skills'
 
@@ -259,6 +260,15 @@ export default function KidDashboardClient({
               <Card>
                 <SkillsOverview kid={kid} />
               </Card>
+
+              {/* Savings Goals */}
+              {canAccessFeature(kid, 2) && (
+                <SavingsGoalsWidget
+                  goals={savingsGoals}
+                  kid={{ ...kid, balance: kid.balance }}
+                  familyId={familyId}
+                />
+              )}
 
               {/* Available Tasks Preview */}
               {canAccessFeature(kid, 2) && availableTasks.length > 0 && (
