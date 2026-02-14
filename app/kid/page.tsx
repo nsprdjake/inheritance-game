@@ -76,6 +76,80 @@ export default async function KidDashboardPage() {
     console.log('Streaks table not yet available')
   }
 
+  // Phase 1: Fetch available tasks
+  let availableTasks = []
+  try {
+    const { data } = await supabase
+      .from('task_templates')
+      .select('*')
+      .eq('family_id', userData.family_id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+    availableTasks = data || []
+  } catch (e) {
+    console.log('Task templates table not yet available')
+  }
+
+  // Phase 1: Fetch claimed tasks
+  let claimedTasks = []
+  try {
+    const { data } = await supabase
+      .from('claimed_tasks')
+      .select(`
+        *,
+        task_template:task_templates(*)
+      `)
+      .eq('kid_id', kid.id)
+      .in('status', ['claimed', 'completed', 'pending_approval'])
+      .order('claimed_at', { ascending: false })
+    claimedTasks = data || []
+  } catch (e) {
+    console.log('Claimed tasks table not yet available')
+  }
+
+  // Phase 1: Fetch educational modules
+  let educationalModules = []
+  try {
+    const { data } = await supabase
+      .from('educational_modules')
+      .select('*')
+      .eq('is_active', true)
+      .order('order_index', { ascending: true })
+    educationalModules = data || []
+  } catch (e) {
+    console.log('Educational modules table not yet available')
+  }
+
+  // Phase 1: Fetch module progress
+  let moduleProgress = []
+  try {
+    const { data } = await supabase
+      .from('module_progress')
+      .select(`
+        *,
+        module:educational_modules(*)
+      `)
+      .eq('kid_id', kid.id)
+      .order('last_accessed_at', { ascending: false })
+    moduleProgress = data || []
+  } catch (e) {
+    console.log('Module progress table not yet available')
+  }
+
+  // Phase 1: Fetch savings goals
+  let savingsGoals = []
+  try {
+    const { data } = await supabase
+      .from('savings_goals')
+      .select('*')
+      .eq('kid_id', kid.id)
+      .eq('is_completed', false)
+      .order('created_at', { ascending: false })
+    savingsGoals = data || []
+  } catch (e) {
+    console.log('Savings goals table not yet available')
+  }
+
   const kidWithBalance = { ...kid, balance: balance || 0 }
 
   return (
@@ -85,6 +159,12 @@ export default async function KidDashboardPage() {
       settings={settings}
       achievements={achievements}
       streak={streak}
+      availableTasks={availableTasks}
+      claimedTasks={claimedTasks}
+      educationalModules={educationalModules}
+      moduleProgress={moduleProgress}
+      savingsGoals={savingsGoals}
+      familyId={userData.family_id}
     />
   )
 }

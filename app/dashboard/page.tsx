@@ -65,12 +65,25 @@ export default async function DashboardPage() {
     .eq('family_id', userData.family_id)
     .single()
 
+  // Fetch pending claimed tasks (Phase 1)
+  const { data: pendingTasks } = await supabase
+    .from('claimed_tasks')
+    .select(`
+      *,
+      task_template:task_templates(*),
+      kid:kids(name, id)
+    `)
+    .eq('family_id', userData.family_id)
+    .in('status', ['pending_approval', 'completed'])
+    .order('completed_at', { ascending: false })
+
   return (
     <DashboardClient
       family={family}
       kids={kidsWithBalances}
       transactions={transactions || []}
       settings={settings}
+      pendingTasks={pendingTasks || []}
       userId={user.id}
       familyId={userData.family_id}
     />

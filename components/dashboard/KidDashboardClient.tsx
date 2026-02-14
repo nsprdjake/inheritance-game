@@ -7,7 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
-import { KidWithBalance, Transaction, FamilySettings, Achievement, Streak } from '@/lib/types/database'
+import { KidWithBalance, Transaction, FamilySettings, Achievement, Streak, TaskTemplate, ClaimedTaskWithTemplate, EducationalModule, ModuleProgressWithModule, SavingsGoal } from '@/lib/types/database'
+import SkillTreeView from '@/components/kid/SkillTreeView'
+import AvailableTasks from '@/components/kid/AvailableTasks'
+import EducationalModules from '@/components/kid/EducationalModules'
+import { canAccessFeature } from '@/lib/utils/skills'
 
 interface Props {
   kid: KidWithBalance
@@ -15,12 +19,30 @@ interface Props {
   settings: FamilySettings | null
   achievements?: Achievement[]
   streak?: Streak
+  availableTasks?: TaskTemplate[]
+  claimedTasks?: ClaimedTaskWithTemplate[]
+  educationalModules?: EducationalModule[]
+  moduleProgress?: ModuleProgressWithModule[]
+  savingsGoals?: SavingsGoal[]
+  familyId: string
 }
 
-export default function KidDashboardClient({ kid, transactions, settings, achievements = [], streak }: Props) {
+export default function KidDashboardClient({ 
+  kid, 
+  transactions, 
+  settings, 
+  achievements = [], 
+  streak,
+  availableTasks = [],
+  claimedTasks = [],
+  educationalModules = [],
+  moduleProgress = [],
+  savingsGoals = [],
+  familyId
+}: Props) {
   const router = useRouter()
   const supabase = createClient()
-  const [selectedTab, setSelectedTab] = useState<'activity' | 'achievements' | 'calculator'>('activity')
+  const [selectedTab, setSelectedTab] = useState<'activity' | 'achievements' | 'calculator' | 'skills' | 'tasks' | 'learn'>('activity')
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -167,27 +189,55 @@ export default function KidDashboardClient({ kid, transactions, settings, achiev
         </motion.div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-6">
           <button
             onClick={() => setSelectedTab('activity')}
-            className={`flex-1 py-3 rounded-lg transition-all ${selectedTab === 'activity' ? 'bg-white/10 border-2 border-white/20' : 'bg-white/5'}`}
+            className={`py-3 rounded-lg transition-all ${selectedTab === 'activity' ? 'bg-white/10 border-2 border-white/20' : 'bg-white/5'}`}
           >
             <div className="text-2xl mb-1">📊</div>
-            <div className="text-sm text-white/80">Activity</div>
+            <div className="text-xs text-white/80">Activity</div>
+          </button>
+          <button
+            onClick={() => setSelectedTab('skills')}
+            className={`py-3 rounded-lg transition-all ${selectedTab === 'skills' ? 'bg-white/10 border-2 border-white/20' : 'bg-white/5'}`}
+          >
+            <div className="text-2xl mb-1">🌳</div>
+            <div className="text-xs text-white/80">Skills</div>
+          </button>
+          {canAccessFeature(kid, 2) && (
+            <button
+              onClick={() => setSelectedTab('tasks')}
+              className={`py-3 rounded-lg transition-all ${selectedTab === 'tasks' ? 'bg-white/10 border-2 border-white/20' : 'bg-white/5'}`}
+            >
+              <div className="text-2xl mb-1">✓</div>
+              <div className="text-xs text-white/80">Tasks</div>
+              {claimedTasks.length > 0 && (
+                <div className="inline-block px-1.5 py-0.5 mt-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs">
+                  {claimedTasks.length}
+                </div>
+              )}
+            </button>
+          )}
+          <button
+            onClick={() => setSelectedTab('learn')}
+            className={`py-3 rounded-lg transition-all ${selectedTab === 'learn' ? 'bg-white/10 border-2 border-white/20' : 'bg-white/5'}`}
+          >
+            <div className="text-2xl mb-1">📚</div>
+            <div className="text-xs text-white/80">Learn</div>
           </button>
           <button
             onClick={() => setSelectedTab('achievements')}
-            className={`flex-1 py-3 rounded-lg transition-all ${selectedTab === 'achievements' ? 'bg-white/10 border-2 border-white/20' : 'bg-white/5'}`}
+            className={`py-3 rounded-lg transition-all ${selectedTab === 'achievements' ? 'bg-white/10 border-2 border-white/20' : 'bg-white/5'}`}
           >
             <div className="text-2xl mb-1">🏆</div>
-            <div className="text-sm text-white/80">Achievements</div>
+            <div className="text-xs text-white/80">Badges</div>
           </button>
           <button
             onClick={() => setSelectedTab('calculator')}
-            className={`flex-1 py-3 rounded-lg transition-all ${selectedTab === 'calculator' ? 'bg-white/10 border-2 border-white/20' : 'bg-white/5'}`}
+            className={`py-3 rounded-lg transition-all ${selectedTab === 'calculator' ? 'bg-white/10 border-2 border-white/20' : 'bg-white/5'}`}
           >
             <div className="text-2xl mb-1">🎁</div>
-            <div className="text-sm text-white/80">Rewards</div>
+            <div className="text-xs text-white/80">Rewards</div>
           </button>
         </div>
 
@@ -283,6 +333,107 @@ export default function KidDashboardClient({ kid, transactions, settings, achiev
                     </div>
                   </div>
                 )}
+              </Card>
+            </motion.div>
+          )}
+
+          {/* Skills Tab */}
+          {selectedTab === 'skills' && (
+            <motion.div
+              key="skills"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <SkillTreeView kid={kid} />
+            </motion.div>
+          )}
+
+          {/* Tasks Tab */}
+          {selectedTab === 'tasks' && (
+            <motion.div
+              key="tasks"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <div className="space-y-6">
+                {/* My Claimed Tasks */}
+                {claimedTasks.length > 0 && (
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-4">My Tasks</h3>
+                    <div className="space-y-3">
+                      {claimedTasks.map((task, index) => (
+                        <motion.div
+                          key={task.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                        >
+                          <Card>
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-white mb-1">
+                                  {task.task_template?.title || 'Task'}
+                                </h4>
+                                <p className="text-sm text-white/60 mb-2">
+                                  {task.task_template?.description}
+                                </p>
+                                <div className="flex items-center gap-2">
+                                  <span className={`text-xs px-2 py-1 rounded-full ${
+                                    task.status === 'claimed' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                                    task.status === 'completed' || task.status === 'pending_approval' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                                    task.status === 'approved' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                                    'bg-red-500/20 text-red-400 border border-red-500/30'
+                                  }`}>
+                                    {task.status === 'pending_approval' ? 'Waiting for approval' : task.status}
+                                  </span>
+                                  <span className="text-sm font-bold gradient-text">
+                                    +{task.task_template?.points || 0} pts
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Available Tasks */}
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-4">Available Tasks</h3>
+                  <AvailableTasks
+                    tasks={availableTasks}
+                    kid={kid}
+                    familyId={familyId}
+                    onTaskClaimed={() => router.refresh()}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Learn Tab */}
+          {selectedTab === 'learn' && (
+            <motion.div
+              key="learn"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <Card>
+                <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <span>📚</span>
+                  <span>Learning Modules</span>
+                </h3>
+                <EducationalModules
+                  modules={educationalModules}
+                  progress={moduleProgress}
+                  kid={kid}
+                  familyId={familyId}
+                />
               </Card>
             </motion.div>
           )}

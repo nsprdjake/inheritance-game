@@ -8,19 +8,25 @@ import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Confetti from '@/components/ui/Confetti'
-import { Family, KidWithBalance, TransactionWithKid, FamilySettings } from '@/lib/types/database'
+import { Family, KidWithBalance, TransactionWithKid, FamilySettings, ClaimedTaskWithTemplate } from '@/lib/types/database'
 import Link from 'next/link'
+import SkillBadge from '@/components/ui/SkillBadge'
+import AgeTierBadge from '@/components/ui/AgeTierBadge'
+import SkillAwardButtons from './SkillAwardButtons'
+import TaskApprovalQueue from './TaskApprovalQueue'
+import { getAllSkills, calculateAgeTier } from '@/lib/utils/skills'
 
 interface Props {
   family: Family | null
   kids: KidWithBalance[]
   transactions: TransactionWithKid[]
   settings: FamilySettings | null
+  pendingTasks: ClaimedTaskWithTemplate[]
   userId: string
   familyId: string
 }
 
-export default function DashboardClient({ family, kids, transactions, settings, userId, familyId }: Props) {
+export default function DashboardClient({ family, kids, transactions, settings, pendingTasks, userId, familyId }: Props) {
   const router = useRouter()
   const supabase = createClient()
   
@@ -195,16 +201,21 @@ export default function DashboardClient({ family, kids, transactions, settings, 
                     <Card hover>
                       <div className="space-y-4">
                         {/* Kid info */}
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-start">
                           <div className="flex items-center gap-3">
                             <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${getLevelColor(kid.level)} flex items-center justify-center text-2xl`}>
                               {getLevelEmoji(kid.level)}
                             </div>
                             <div>
                               <h3 className="text-xl font-semibold text-white">{kid.name}</h3>
-                              <p className="text-sm text-white/60">
-                                {kid.age} years • {kid.level || 'bronze'} level
-                              </p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm text-white/60">
+                                  {kid.age} years • {kid.level || 'bronze'} level
+                                </p>
+                                {kid.age_tier && (
+                                  <AgeTierBadge tier={kid.age_tier} size="sm" />
+                                )}
+                              </div>
                             </div>
                           </div>
                           <div className="text-right">
@@ -217,35 +228,68 @@ export default function DashboardClient({ family, kids, transactions, settings, 
                           </div>
                         </div>
 
-                        {/* Quick award buttons */}
-                        <div className="grid grid-cols-3 gap-2">
-                          <button
-                            onClick={() => quickAward(kid.id, settings?.point_values.small || 10, 'Small')}
+                        {/* Skill levels (if available) */}
+                        {(kid.skill_earning || kid.skill_saving || kid.skill_investing || kid.skill_budgeting) ? (
+                          <div className="grid grid-cols-2 gap-2">
+                            {kid.skill_earning !== undefined && kid.skill_earning > 0 && (
+                              <SkillBadge skill="earning" points={kid.skill_earning} size="sm" />
+                            )}
+                            {kid.skill_saving !== undefined && kid.skill_saving > 0 && (
+                              <SkillBadge skill="saving" points={kid.skill_saving} size="sm" />
+                            )}
+                            {kid.skill_investing !== undefined && kid.skill_investing > 0 && (
+                              <SkillBadge skill="investing" points={kid.skill_investing} size="sm" />
+                            )}
+                            {kid.skill_budgeting !== undefined && kid.skill_budgeting > 0 && (
+                              <SkillBadge skill="budgeting" points={kid.skill_budgeting} size="sm" />
+                            )}
+                          </div>
+                        ) : null}
+
+                        {/* Skill-based award buttons */}
+                        <div className="border-t border-white/10 pt-3">
+                          <p className="text-xs text-white/60 mb-2">Quick Award by Skill:</p>
+                          <SkillAwardButtons
+                            kidId={kid.id}
+                            familyId={familyId}
+                            userId={userId}
+                            onSuccess={() => router.refresh()}
                             disabled={loading}
-                            className="py-3 rounded-lg bg-gradient-to-r from-blue-500/20 to-blue-600/20 hover:from-blue-500/30 hover:to-blue-600/30 border border-blue-500/30 transition-all duration-200 hover:scale-105 disabled:opacity-50"
-                          >
-                            <div className="text-2xl mb-1">⭐</div>
-                            <div className="text-xs text-white/80">Small</div>
-                            <div className="text-sm font-bold text-white">+{settings?.point_values.small || 10}</div>
-                          </button>
-                          <button
-                            onClick={() => quickAward(kid.id, settings?.point_values.medium || 25, 'Medium')}
-                            disabled={loading}
-                            className="py-3 rounded-lg bg-gradient-to-r from-purple-500/20 to-purple-600/20 hover:from-purple-500/30 hover:to-purple-600/30 border border-purple-500/30 transition-all duration-200 hover:scale-105 disabled:opacity-50"
-                          >
-                            <div className="text-2xl mb-1">🌟</div>
-                            <div className="text-xs text-white/80">Medium</div>
-                            <div className="text-sm font-bold text-white">+{settings?.point_values.medium || 25}</div>
-                          </button>
-                          <button
-                            onClick={() => quickAward(kid.id, settings?.point_values.large || 50, 'Large')}
-                            disabled={loading}
-                            className="py-3 rounded-lg bg-gradient-to-r from-yellow-500/20 to-orange-500/20 hover:from-yellow-500/30 hover:to-orange-500/30 border border-yellow-500/30 transition-all duration-200 hover:scale-105 disabled:opacity-50"
-                          >
-                            <div className="text-2xl mb-1">✨</div>
-                            <div className="text-xs text-white/80">Large</div>
-                            <div className="text-sm font-bold text-white">+{settings?.point_values.large || 50}</div>
-                          </button>
+                          />
+                        </div>
+
+                        {/* Quick award buttons (generic) */}
+                        <div className="border-t border-white/10 pt-3">
+                          <p className="text-xs text-white/60 mb-2">Quick Award (General):</p>
+                          <div className="grid grid-cols-3 gap-2">
+                            <button
+                              onClick={() => quickAward(kid.id, settings?.point_values.small || 10, 'Small')}
+                              disabled={loading}
+                              className="py-3 rounded-lg bg-gradient-to-r from-blue-500/20 to-blue-600/20 hover:from-blue-500/30 hover:to-blue-600/30 border border-blue-500/30 transition-all duration-200 hover:scale-105 disabled:opacity-50"
+                            >
+                              <div className="text-2xl mb-1">⭐</div>
+                              <div className="text-xs text-white/80">Small</div>
+                              <div className="text-sm font-bold text-white">+{settings?.point_values.small || 10}</div>
+                            </button>
+                            <button
+                              onClick={() => quickAward(kid.id, settings?.point_values.medium || 25, 'Medium')}
+                              disabled={loading}
+                              className="py-3 rounded-lg bg-gradient-to-r from-purple-500/20 to-purple-600/20 hover:from-purple-500/30 hover:to-purple-600/30 border border-purple-500/30 transition-all duration-200 hover:scale-105 disabled:opacity-50"
+                            >
+                              <div className="text-2xl mb-1">🌟</div>
+                              <div className="text-xs text-white/80">Medium</div>
+                              <div className="text-sm font-bold text-white">+{settings?.point_values.medium || 25}</div>
+                            </button>
+                            <button
+                              onClick={() => quickAward(kid.id, settings?.point_values.large || 50, 'Large')}
+                              disabled={loading}
+                              className="py-3 rounded-lg bg-gradient-to-r from-yellow-500/20 to-orange-500/20 hover:from-yellow-500/30 hover:to-orange-500/30 border border-yellow-500/30 transition-all duration-200 hover:scale-105 disabled:opacity-50"
+                            >
+                              <div className="text-2xl mb-1">✨</div>
+                              <div className="text-xs text-white/80">Large</div>
+                              <div className="text-sm font-bold text-white">+{settings?.point_values.large || 50}</div>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </Card>
@@ -379,6 +423,22 @@ export default function DashboardClient({ family, kids, transactions, settings, 
               </Card>
             </div>
           </div>
+
+          {/* Task Approval Queue (Phase 1) */}
+          {pendingTasks.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="mt-8"
+            >
+              <TaskApprovalQueue
+                pendingTasks={pendingTasks}
+                userId={userId}
+                onApprove={() => router.refresh()}
+              />
+            </motion.div>
+          )}
 
           {/* Recent activity */}
           <motion.div 
