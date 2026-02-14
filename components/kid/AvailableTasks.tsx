@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { TaskTemplate, Kid } from '@/lib/types/database'
-import { getSkillEmoji, canAccessFeature } from '@/lib/utils/skills'
+import { getSkillEmoji, canAccessFeature, getSkillName, calculateAgeTier } from '@/lib/utils/skills'
 import { motion, AnimatePresence } from 'framer-motion'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -16,10 +16,9 @@ interface Props {
 
 export default function AvailableTasks({ tasks, kid, familyId, onTaskClaimed }: Props) {
   const [loading, setLoading] = useState<string | null>(null)
-  const [expandedTask, setExpandedTask] = useState<string | null>(null)
 
   // Filter tasks by age tier
-  const ageTier = kid.age_tier || 1
+  const ageTier = kid.age_tier || calculateAgeTier(kid.birthdate)
   const availableTasks = tasks.filter(task => 
     task.is_active && 
     task.min_age_tier <= ageTier &&
@@ -48,38 +47,6 @@ export default function AvailableTasks({ tasks, kid, familyId, onTaskClaimed }: 
     } catch (err: any) {
       console.error('Failed to claim task:', err)
       alert('Failed to claim task. Please try again.')
-    } finally {
-      setLoading(null)
-      setExpandedTask(null)
-    }
-  }
-
-  const markCompleted = async (taskId: string, notes: string) => {
-    setLoading(taskId)
-    
-    try {
-      const { createClient } = await import('@/lib/supabase/client')
-      const supabase = createClient()
-      
-      // Auto-approve for Tier 3+, otherwise pending approval
-      const newStatus = ageTier >= 3 ? 'approved' : 'pending_approval'
-      
-      const { error } = await supabase
-        .from('claimed_tasks')
-        .update({
-          status: newStatus,
-          completed_at: new Date().toISOString(),
-          notes: notes || null,
-        })
-        .eq('id', taskId)
-        .eq('status', 'claimed')
-
-      if (error) throw error
-
-      onTaskClaimed?.()
-    } catch (err: any) {
-      console.error('Failed to mark task as completed:', err)
-      alert('Failed to update task. Please try again.')
     } finally {
       setLoading(null)
     }
@@ -128,12 +95,7 @@ export default function AvailableTasks({ tasks, kid, familyId, onTaskClaimed }: 
                 {/* Task header */}
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {task.skill_type && (
-                        <span className="text-lg">
-                          {getSkillEmoji(task.skill_type)}
-                        </span>
-                      )}
+                    <div className="flex items-center gap-2 mb-2">
                       <h4 className="font-semibold text-white">
                         {task.title}
                       </h4>
@@ -144,16 +106,21 @@ export default function AvailableTasks({ tasks, kid, familyId, onTaskClaimed }: 
                       )}
                     </div>
                     {task.description && (
-                      <p className="text-sm text-white/60">
+                      <p className="text-sm text-white/60 mb-2">
                         {task.description}
                       </p>
                     )}
-                  </div>
-                  <div className="text-right ml-4">
-                    <div className="text-2xl font-bold gradient-text">
-                      +{task.points}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {task.skill_type && (
+                        <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 border border-white/10">
+                          <span className="text-base">{getSkillEmoji(task.skill_type)}</span>
+                          <span className="text-xs text-white/80">{getSkillName(task.skill_type)}</span>
+                        </div>
+                      )}
+                      <div className="text-sm font-bold gradient-text">
+                        +{task.points} pts
+                      </div>
                     </div>
-                    <div className="text-xs text-white/60">points</div>
                   </div>
                 </div>
 

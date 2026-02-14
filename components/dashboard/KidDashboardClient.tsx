@@ -11,7 +11,10 @@ import { KidWithBalance, Transaction, FamilySettings, Achievement, Streak, TaskT
 import SkillTreeView from '@/components/kid/SkillTreeView'
 import AvailableTasks from '@/components/kid/AvailableTasks'
 import EducationalModules from '@/components/kid/EducationalModules'
-import { canAccessFeature } from '@/lib/utils/skills'
+import ClaimedTasksList from '@/components/kid/ClaimedTasksList'
+import SkillsOverview from '@/components/dashboard/SkillsOverview'
+import AgeTierBadge from '@/components/ui/AgeTierBadge'
+import { canAccessFeature, calculateAgeTier } from '@/lib/utils/skills'
 
 interface Props {
   kid: KidWithBalance
@@ -99,13 +102,14 @@ export default function KidDashboardClient({
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex justify-between items-center mb-8"
+          className="flex justify-between items-start mb-8"
         >
           <div>
             <h1 className="text-4xl font-bold gradient-text mb-2">
               Hey, {kid.name}! 👋
             </h1>
-            <p className="text-white/60">Your Points Dashboard</p>
+            <p className="text-white/60 mb-3">Your Points Dashboard</p>
+            <AgeTierBadge tier={kid.age_tier || calculateAgeTier(kid.birthdate)} showDetails />
           </div>
           <Button variant="ghost" onClick={handleSignOut}>
             Sign Out
@@ -249,11 +253,111 @@ export default function KidDashboardClient({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
             >
+              {/* Skills Overview */}
+              <Card>
+                <SkillsOverview kid={kid} />
+              </Card>
+
+              {/* Available Tasks Preview */}
+              {canAccessFeature(kid, 2) && availableTasks.length > 0 && (
+                <Card>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                      <span>✓</span>
+                      <span>Available Tasks</span>
+                    </h3>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setSelectedTab('tasks')}
+                    >
+                      See all →
+                    </Button>
+                  </div>
+                  <div className="space-y-3">
+                    {availableTasks.slice(0, 3).map((task, index) => (
+                      <motion.div
+                        key={task.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-pointer"
+                        onClick={() => setSelectedTab('tasks')}
+                      >
+                        <div className="flex-1">
+                          <p className="text-white font-medium">{task.title}</p>
+                          <p className="text-xs text-white/60">{task.description}</p>
+                        </div>
+                        <div className="text-right ml-4">
+                          <div className="text-xl font-bold gradient-text">+{task.points}</div>
+                          <div className="text-xs text-white/60">points</div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
+              {/* Continue Learning Preview */}
+              {moduleProgress.length > 0 && (
+                <Card>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                      <span>📚</span>
+                      <span>Continue Learning</span>
+                    </h3>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setSelectedTab('learn')}
+                    >
+                      See all →
+                    </Button>
+                  </div>
+                  <div className="space-y-3">
+                    {moduleProgress
+                      .filter(p => p.progress_percent < 100)
+                      .slice(0, 2)
+                      .map((prog, index) => {
+                        const module = educationalModules.find(m => m.id === prog.module_id)
+                        if (!module) return null
+                        
+                        return (
+                          <motion.div
+                            key={prog.id}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer"
+                            onClick={() => setSelectedTab('learn')}
+                          >
+                            <div className="flex items-center gap-3 mb-2">
+                              {module.icon && <span className="text-2xl">{module.icon}</span>}
+                              <div className="flex-1">
+                                <p className="text-white font-medium">{module.title}</p>
+                                <p className="text-xs text-white/60">{prog.progress_percent}% complete</p>
+                              </div>
+                            </div>
+                            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-purple-500 to-blue-500"
+                                style={{ width: `${prog.progress_percent}%` }}
+                              />
+                            </div>
+                          </motion.div>
+                        )
+                      })}
+                  </div>
+                </Card>
+              )}
+
+              {/* Recent Activity */}
               <Card>
                 <h3 className="text-xl font-bold text-white mb-4">Recent Activity</h3>
                 <div className="space-y-3">
-                  {transactions.map((tx, index) => (
+                  {transactions.slice(0, 10).map((tx, index) => (
                     <motion.div
                       key={tx.id}
                       initial={{ opacity: 0, x: -10 }}
@@ -359,47 +463,11 @@ export default function KidDashboardClient({
             >
               <div className="space-y-6">
                 {/* My Claimed Tasks */}
-                {claimedTasks.length > 0 && (
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-4">My Tasks</h3>
-                    <div className="space-y-3">
-                      {claimedTasks.map((task, index) => (
-                        <motion.div
-                          key={task.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                        >
-                          <Card>
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <h4 className="font-semibold text-white mb-1">
-                                  {task.task_template?.title || 'Task'}
-                                </h4>
-                                <p className="text-sm text-white/60 mb-2">
-                                  {task.task_template?.description}
-                                </p>
-                                <div className="flex items-center gap-2">
-                                  <span className={`text-xs px-2 py-1 rounded-full ${
-                                    task.status === 'claimed' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                                    task.status === 'completed' || task.status === 'pending_approval' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
-                                    task.status === 'approved' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-                                    'bg-red-500/20 text-red-400 border border-red-500/30'
-                                  }`}>
-                                    {task.status === 'pending_approval' ? 'Waiting for approval' : task.status}
-                                  </span>
-                                  <span className="text-sm font-bold gradient-text">
-                                    +{task.task_template?.points || 0} pts
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </Card>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <ClaimedTasksList
+                  claimedTasks={claimedTasks}
+                  kid={kid}
+                  onTaskUpdated={() => router.refresh()}
+                />
 
                 {/* Available Tasks */}
                 <div>
