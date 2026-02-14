@@ -51,7 +51,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold gradient-text mb-2">
-            Inheritance Game
+            LYNE
           </h1>
           <p className="text-white/60">Welcome back!</p>
         </div>
