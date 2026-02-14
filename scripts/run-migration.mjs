@@ -1,29 +1,53 @@
-import pg from 'pg';
-import fs from 'fs';
+#!/usr/bin/env node
 
-const { Client } = pg;
+import { readFileSync } from 'fs'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
 
-const client = new Client({
-  connectionString: 'postgresql://postgres:Eyejande072801!$@db.kxqrsdicrayblwpczxsy.supabase.co:5432/postgres',
-  ssl: { rejectUnauthorized: false }
-});
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+const SUPABASE_PROJECT_REF = process.env.SUPABASE_PROJECT_REF || 'kxqrsdicrayblwpczxsy'
+const SUPABASE_ACCESS_TOKEN = process.env.SUPABASE_ACCESS_TOKEN || ''
+
+if (!SUPABASE_ACCESS_TOKEN) {
+  console.error('Error: SUPABASE_ACCESS_TOKEN environment variable required')
+  process.exit(1)
+}
 
 async function runMigration() {
   try {
-    await client.connect();
-    console.log('✅ Connected to database');
+    const sqlPath = join(__dirname, '..', 'fix-gamification-schema.sql')
+    const sql = readFileSync(sqlPath, 'utf8')
     
-    const sql = fs.readFileSync('./supabase/migrations/20260213_gamification.sql', 'utf8');
+    console.log('Running migration via Supabase Management API...')
     
-    await client.query(sql);
-    console.log('✅ Migration completed successfully!');
+    const response = await fetch(
+      `https://api.supabase.com/v1/projects/${SUPABASE_PROJECT_REF}/database/query`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: sql })
+      }
+    )
     
-    await client.end();
-    process.exit(0);
-  } catch (error) {
-    console.error('❌ Migration failed:', error.message);
-    process.exit(1);
+    const result = await response.json()
+    
+    if (!response.ok) {
+      console.error('❌ Migration failed:')
+      console.error(JSON.stringify(result, null, 2))
+      process.exit(1)
+    }
+    
+    console.log('✅ Migration complete!')
+    console.log(JSON.stringify(result, null, 2))
+  } catch (err) {
+    console.error('Fatal error:', err)
+    process.exit(1)
   }
 }
 
-runMigration();
+runMigration()
