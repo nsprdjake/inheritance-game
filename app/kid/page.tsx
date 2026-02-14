@@ -50,6 +50,32 @@ export default async function KidDashboardPage() {
     .eq('family_id', userData.family_id)
     .single()
 
+  // Try to fetch achievements (may fail if table doesn't exist yet)
+  let achievements = []
+  try {
+    const { data } = await supabase
+      .from('achievements')
+      .select('*')
+      .eq('kid_id', kid.id)
+      .order('unlocked_at', { ascending: false })
+    achievements = data || []
+  } catch (e) {
+    console.log('Achievements table not yet available')
+  }
+
+  // Try to fetch streak (may fail if table doesn't exist yet)
+  let streak = null
+  try {
+    const { data } = await supabase
+      .from('streaks')
+      .select('*')
+      .eq('kid_id', kid.id)
+      .single()
+    streak = data
+  } catch (e) {
+    console.log('Streaks table not yet available')
+  }
+
   const kidWithBalance = { ...kid, balance: balance || 0 }
 
   return (
@@ -57,6 +83,8 @@ export default async function KidDashboardPage() {
       kid={kidWithBalance}
       transactions={transactions || []}
       settings={settings}
+      achievements={achievements}
+      streak={streak}
     />
   )
 }
