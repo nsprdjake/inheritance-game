@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';;
 
 interface VideoRecorderProps {
   legacyAccountId: string;
@@ -37,7 +37,7 @@ export default function VideoRecorder({
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const MAX_DURATION = 5 * 60; // 5 minutes in seconds
 

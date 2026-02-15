@@ -10,8 +10,8 @@ import {
   getMilestoneIcon,
   MilestoneType
 } from '@/lib/types/legacy';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-// import VideoMessageSection from './VideoMessageSection'; // Temporarily disabled
+import { createClient } from '@/lib/supabase/client';
+import VideoMessageSection from './VideoMessageSection';
 
 interface QuestBuilderProps {
   quest: LegacyQuest;
@@ -28,7 +28,7 @@ export default function QuestBuilder({
   onSave,
   onPublish 
 }: QuestBuilderProps) {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [milestones, setMilestones] = useState<CreateMilestoneInput[]>(
     initialMilestones.map(m => ({
       quest_id: quest.id,
@@ -42,15 +42,14 @@ export default function QuestBuilder({
       prerequisites: m.prerequisites,
     }))
   );
-  // const [milestoneVideos, setMilestoneVideos] = useState<Record<string, any>>({}); // Temporarily disabled
+  const [milestoneVideos, setMilestoneVideos] = useState<Record<string, any>>({});
   const [isEditingMilestone, setIsEditingMilestone] = useState<number | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Load existing videos for milestones - Temporarily disabled
-  /*
+  // Load existing videos for milestones
   useEffect(() => {
     loadMilestoneVideos();
   }, [initialMilestones]);
@@ -81,7 +80,6 @@ export default function QuestBuilder({
       console.error('Error loading milestone videos:', err);
     }
   };
-  */
 
   const addMilestone = (template?: AchievementTemplate) => {
     const newMilestone: CreateMilestoneInput = {
@@ -334,7 +332,7 @@ export default function QuestBuilder({
                       rows={2}
                     />
                     
-                    {/* Video Message Section - Temporarily disabled
+                    {/* Video Message Section */}
                     {initialMilestones[index]?.id && (
                       <VideoMessageSection
                         legacyAccountId={quest.legacy_account_id}
@@ -343,7 +341,6 @@ export default function QuestBuilder({
                         onVideoSaved={loadMilestoneVideos}
                       />
                     )}
-                    */}
                     
                     <div className="milestone-actions">
                       <button onClick={() => setIsEditingMilestone(null)} className="btn-sm btn-secondary">

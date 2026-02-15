@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';;
 import VideoUploader from './VideoUploader';
 import VideoRecorder from './VideoRecorder';
 
@@ -28,7 +28,7 @@ export default function VideoMessageSection({
   const [mode, setMode] = useState<Mode>(existingVideo ? 'preview' : 'choice');
   const [currentVideo, setCurrentVideo] = useState(existingVideo);
   const [isDeleting, setIsDeleting] = useState(false);
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const handleVideoComplete = async (videoData: {
     storage_path: string;

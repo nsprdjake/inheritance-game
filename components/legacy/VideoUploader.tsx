@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';;
 
 interface VideoUploaderProps {
   legacyAccountId: string;
@@ -31,7 +31,7 @@ export default function VideoUploader({
   const [videoDuration, setVideoDuration] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
   const ACCEPTED_FORMATS = ['video/mp4', 'video/quicktime', 'video/webm'];
