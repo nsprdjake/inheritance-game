@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { readFileSync } from 'fs';
 
 const supabaseUrl = 'https://kxqrsdicrayblwpczxsy.supabase.co';
-const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4cXJzZGljcmF5Ymx3cGN6eHN5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTY1ODk2OCwiZXhwIjoyMDgxMjM0OTY4fQ.aS08Saba5oOQsJZqfRf3tUuaCXqwcwyyno4kzMgzsEc';
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || (() => { const fs = require('fs'); try { const env = fs.readFileSync('.env.local', 'utf-8'); const match = env.match(/SUPABASE_SERVICE_ROLE_KEY=(.+)/); return match ? match[1].trim() : ''; } catch { return ''; } })();
 
 const supabase = createClient(supabaseUrl, serviceKey, {
   auth: {
