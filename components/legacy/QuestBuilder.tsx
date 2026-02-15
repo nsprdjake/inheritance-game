@@ -11,7 +11,7 @@ import {
   MilestoneType
 } from '@/lib/types/legacy';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import VideoMessageSection from './VideoMessageSection';
+// import VideoMessageSection from './VideoMessageSection'; // Temporarily disabled
 
 interface QuestBuilderProps {
   quest: LegacyQuest;
@@ -42,14 +42,15 @@ export default function QuestBuilder({
       prerequisites: m.prerequisites,
     }))
   );
-  const [milestoneVideos, setMilestoneVideos] = useState<Record<string, any>>({});
+  // const [milestoneVideos, setMilestoneVideos] = useState<Record<string, any>>({}); // Temporarily disabled
   const [isEditingMilestone, setIsEditingMilestone] = useState<number | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Load existing videos for milestones
+  // Load existing videos for milestones - Temporarily disabled
+  /*
   useEffect(() => {
     loadMilestoneVideos();
   }, [initialMilestones]);
@@ -80,6 +81,7 @@ export default function QuestBuilder({
       console.error('Error loading milestone videos:', err);
     }
   };
+  */
 
   const addMilestone = (template?: AchievementTemplate) => {
     const newMilestone: CreateMilestoneInput = {
@@ -332,7 +334,7 @@ export default function QuestBuilder({
                       rows={2}
                     />
                     
-                    {/* Video Message Section */}
+                    {/* Video Message Section - Temporarily disabled
                     {initialMilestones[index]?.id && (
                       <VideoMessageSection
                         legacyAccountId={quest.legacy_account_id}
@@ -341,6 +343,7 @@ export default function QuestBuilder({
                         onVideoSaved={loadMilestoneVideos}
                       />
                     )}
+                    */}
                     
                     <div className="milestone-actions">
                       <button onClick={() => setIsEditingMilestone(null)} className="btn-sm btn-secondary">
