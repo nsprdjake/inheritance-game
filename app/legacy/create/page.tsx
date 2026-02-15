@@ -22,6 +22,7 @@ export default function CreateQuestPage() {
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showSetup, setShowSetup] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   // Setup form state
   const [questTitle, setQuestTitle] = useState('');
@@ -37,21 +38,38 @@ export default function CreateQuestPage() {
 
   const loadData = async () => {
     try {
+      console.log('[CREATE] Starting loadData...');
+      
       // Load achievement templates
-      const { data: templatesData } = await supabase
+      const { data: templatesData, error: templatesError } = await supabase
         .from('legacy_achievement_templates')
         .select('*')
         .eq('is_active', true)
         .order('category', { ascending: true });
       
+      if (templatesError) {
+        console.error('[CREATE] Templates error:', templatesError);
+        throw templatesError;
+      }
+      
+      console.log('[CREATE] Loaded', templatesData?.length, 'templates');
       if (templatesData) setTemplates(templatesData);
 
       // Load user's legacy account and beneficiaries
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error('[CREATE] User error:', userError);
+        throw userError;
+      }
+      
       if (!user) {
+        console.log('[CREATE] No user, redirecting to login');
         router.push('/auth/login');
         return;
       }
+      
+      console.log('[CREATE] User ID:', user.id);
 
       // Get or create legacy account
       let { data: legacyAccount } = await supabase
@@ -101,8 +119,9 @@ export default function CreateQuestPage() {
           setShowSetup(true);
         }
       }
-    } catch (error) {
-      console.error('Error loading data:', error);
+    } catch (error: any) {
+      console.error('[CREATE] Error loading data:', error);
+      setError(error?.message || String(error));
     } finally {
       setIsLoading(false);
     }
@@ -251,6 +270,21 @@ export default function CreateQuestPage() {
       alert('Failed to publish quest. Please try again.');
     }
   };
+
+  if (error) {
+    return (
+      <div className="loading-container">
+        <h2 style={{color: '#ef4444', marginBottom: '1rem'}}>Error Loading Page</h2>
+        <p style={{marginBottom: '1rem'}}>{error}</p>
+        <button onClick={() => window.location.reload()} className="btn-primary">
+          Retry
+        </button>
+        <p style={{marginTop: '2rem', fontSize: '0.875rem', color: '#999'}}>
+          Check browser console for details (F12)
+        </p>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
