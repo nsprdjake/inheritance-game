@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 import { 
   LegacyMilestone,
   MilestoneEvidence,
@@ -16,7 +16,7 @@ interface PendingMilestone extends LegacyMilestone {
 }
 
 export default function TrusteeDashboardPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [pendingMilestones, setPendingMilestones] = useState<PendingMilestone[]>([]);
   const [selectedMilestone, setSelectedMilestone] = useState<PendingMilestone | null>(null);
   const [isLoading, setIsLoading] = useState(true);

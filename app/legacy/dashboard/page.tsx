@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 import { LegacyAccount, LegacyQuest, Beneficiary, formatCents } from '@/lib/types/legacy';
 
 export default function LegacyDashboardPage() {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   
   const [account, setAccount] = useState<LegacyAccount | null>(null);
   const [quests, setQuests] = useState<LegacyQuest[]>([]);

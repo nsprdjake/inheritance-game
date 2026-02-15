@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 import { 
   LegacyQuest, 
   LegacyMilestone, 
@@ -13,7 +13,7 @@ import {
 import LockedVideoDisplay from '@/components/legacy/LockedVideoDisplay';
 
 export default function BeneficiaryLegacyPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [quests, setQuests] = useState<LegacyQuest[]>([]);
   const [milestones, setMilestones] = useState<Record<string, LegacyMilestone[]>>({});
   const [media, setMedia] = useState<Record<string, LegacyMedia[]>>({});

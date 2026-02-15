@@ -10,11 +10,11 @@ import {
   CreateMilestoneInput,
   Beneficiary
 } from '@/lib/types/legacy';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 
 export default function CreateQuestPage() {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   
   const [quest, setQuest] = useState<LegacyQuest | null>(null);
   const [milestones, setMilestones] = useState<LegacyMilestone[]>([]);
