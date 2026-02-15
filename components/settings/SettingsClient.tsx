@@ -10,6 +10,7 @@ import { Family, Kid, FamilySettings } from '@/lib/types/database'
 import Link from 'next/link'
 import CreateKidAccount from './CreateKidAccount'
 import ThemeSelector from '@/components/ui/ThemeSelector'
+import ChangePasswordSection from './ChangePasswordSection'
 
 interface Props {
   family: Family | null
@@ -214,6 +215,9 @@ export default function SettingsClient({ family, kids, settings, familyId }: Pro
             />
           </div>
         </Card>
+
+        {/* Change Password */}
+        <ChangePasswordSection />
 
         {/* Theme Settings */}
         <Card className="mb-6">
