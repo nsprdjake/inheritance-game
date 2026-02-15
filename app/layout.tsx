@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./design-system.css";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import ThemeParticles from "@/components/ui/ThemeParticles";
 
 export const metadata: Metadata = {
   title: "LYNE - Build Your Financial Legacy",
@@ -15,7 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="antialiased">
-        {children}
+        <ThemeProvider>
+          <ThemeParticles />
+          <div className="relative z-10">
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

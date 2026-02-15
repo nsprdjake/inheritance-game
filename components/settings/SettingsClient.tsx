@@ -9,6 +9,7 @@ import Input from '@/components/ui/Input'
 import { Family, Kid, FamilySettings } from '@/lib/types/database'
 import Link from 'next/link'
 import CreateKidAccount from './CreateKidAccount'
+import ThemeSelector from '@/components/ui/ThemeSelector'
 
 interface Props {
   family: Family | null
@@ -17,22 +18,12 @@ interface Props {
   familyId: string
 }
 
-const themes = [
-  { id: 'modern', name: 'Modern', emoji: '✨' },
-  { id: 'pirates', name: 'Pirates', emoji: '🏴‍☠️' },
-  { id: 'space', name: 'Space', emoji: '🚀' },
-  { id: 'medieval', name: 'Medieval', emoji: '🏰' },
-]
-
 export default function SettingsClient({ family, kids, settings, familyId }: Props) {
   const router = useRouter()
   const supabase = createClient()
 
   // Family name
   const [familyName, setFamilyName] = useState(family?.name || '')
-  
-  // Theme settings
-  const [theme, setTheme] = useState(settings?.theme || 'modern')
   const [pointValues, setPointValues] = useState({
     small: settings?.point_values?.small || 10,
     medium: settings?.point_values?.medium || 25,
@@ -72,7 +63,6 @@ export default function SettingsClient({ family, kids, settings, familyId }: Pro
       const { error: settingsError } = await supabase
         .from('family_settings')
         .update({
-          theme,
           point_values: pointValues,
           conversion_rate: conversionRate,
         })
@@ -227,23 +217,7 @@ export default function SettingsClient({ family, kids, settings, familyId }: Pro
 
         {/* Theme Settings */}
         <Card className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-4">Theme</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {themes.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => setTheme(t.id)}
-                className={`p-4 rounded-xl border-2 transition-all ${
-                  theme === t.id
-                    ? 'border-indigo-500 bg-indigo-500/10'
-                    : 'border-white/10 bg-white/5 hover:bg-white/10'
-                }`}
-              >
-                <div className="text-3xl mb-1">{t.emoji}</div>
-                <div className="text-sm font-semibold">{t.name}</div>
-              </button>
-            ))}
-          </div>
+          <ThemeSelector />
         </Card>
 
         {/* Point Values */}

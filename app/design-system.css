@@ -6,53 +6,64 @@
 */
 
 /* ============================================
-   COLOR PALETTE
+   🎨 DYNAMIC THEME VARIABLES
+   Set by ThemeProvider - DO NOT hardcode colors!
    ============================================ */
 
 :root {
-  /* Base colors - vibrant and warm */
-  --background-deep: #0A0E27;
-  --background-mid: #141B3D;
-  --background-light: #1E2749;
+  /* Backgrounds - set dynamically by theme */
+  --background-deep: var(--bg-deep, #0A0E27);
+  --background-mid: var(--bg-mid, #141B3D);
+  --background-light: var(--bg-light, #1E2749);
   
-  /* Primary gradient - sunset vibes */
-  --primary-start: #FF6B9D;
-  --primary-mid: #C23AFF;
-  --primary-end: #4F46E5;
+  /* Primary gradient - set dynamically by theme */
+  --primary-start: var(--primary-1, #FF6B9D);
+  --primary-mid: var(--primary-2, #C23AFF);
+  --primary-end: var(--primary-3, #4F46E5);
   
-  /* Secondary gradient - ocean vibes */
-  --secondary-start: #00D4FF;
-  --secondary-mid: #7B61FF;
-  --secondary-end: #5B21B6;
+  /* Secondary gradient - set dynamically by theme */
+  --secondary-start: var(--secondary-1, #00D4FF);
+  --secondary-mid: var(--secondary-2, #7B61FF);
+  --secondary-end: var(--secondary-3, #5B21B6);
   
-  /* Accent colors */
-  --accent-gold: #FFD700;
-  --accent-mint: #4ADE80;
-  --accent-peach: #FBBF24;
-  --accent-coral: #FB7185;
-  --accent-sky: #38BDF8;
+  /* Accent colors - set dynamically by theme */
+  --accent-gold: var(--accent-1, #FFD700);
+  --accent-mint: var(--accent-2, #4ADE80);
+  --accent-peach: var(--accent-3, #FBBF24);
+  --accent-coral: var(--accent-4, #FB7185);
   
-  /* Skill tier colors */
-  --bronze: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
-  --silver: linear-gradient(135deg, #E8E8E8 0%, #A8A8A8 100%);
-  --gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  /* Skill tier colors - set dynamically by theme */
+  --bronze-color: var(--bronze-color, #CD7F32);
+  --silver-color: var(--silver-color, #E8E8E8);
+  --gold-color: var(--gold-color, #FFD700);
   
-  /* Glass effects */
-  --glass-light: rgba(255, 255, 255, 0.08);
-  --glass-medium: rgba(255, 255, 255, 0.12);
-  --glass-strong: rgba(255, 255, 255, 0.16);
+  /* Glass effects - opacity set by theme */
+  --glass-opacity: 0.08;
+  --glass-light: rgba(255, 255, 255, var(--glass-opacity));
+  --glass-medium: rgba(255, 255, 255, calc(var(--glass-opacity) * 1.5));
+  --glass-strong: rgba(255, 255, 255, calc(var(--glass-opacity) * 2));
   
-  /* Text */
-  --text-primary: #FFFFFF;
-  --text-secondary: rgba(255, 255, 255, 0.75);
+  /* Text - set dynamically by theme */
+  --text-primary: var(--text-primary, #FFFFFF);
+  --text-secondary: var(--text-secondary, rgba(255, 255, 255, 0.75));
   --text-tertiary: rgba(255, 255, 255, 0.5);
+  
+  /* Border radius - set by theme (24px default, 8px for pixel theme) */
+  --border-radius: 24px;
+  --border-radius-sm: calc(var(--border-radius) * 0.5);
+  --border-radius-lg: var(--border-radius);
+  
+  /* Fonts - set dynamically by theme */
+  --font-display: "Fredoka", "Comic Neue", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
 }
 
 /* ============================================
-   TYPOGRAPHY
+   TYPOGRAPHY - Theme-aware fonts!
    ============================================ */
 
 .display-xl {
+  font-family: var(--font-display);
   font-size: clamp(3.5rem, 8vw, 7rem);
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -60,6 +71,7 @@
 }
 
 .display-lg {
+  font-family: var(--font-display);
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -67,6 +79,7 @@
 }
 
 .display-md {
+  font-family: var(--font-display);
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -74,7 +87,11 @@
 }
 
 .text-playful {
-  font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+  font-family: var(--font-display);
+}
+
+.text-body {
+  font-family: var(--font-body);
 }
 
 /* ============================================
@@ -133,7 +150,7 @@
   background: var(--glass-light);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
+  border-radius: var(--border-radius);
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -143,7 +160,7 @@
   background: var(--glass-light);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
+  border-radius: var(--border-radius);
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -518,16 +535,49 @@
 }
 
 /* ============================================
-   DARK MODE ENHANCEMENTS
+   THEME-AWARE BACKGROUND & EFFECTS
    ============================================ */
 
 body {
   background: radial-gradient(ellipse at top, var(--background-mid) 0%, var(--background-deep) 100%);
   color: var(--text-primary);
+  font-family: var(--font-body);
   min-height: 100vh;
+  transition: background 0.5s ease-in-out;
 }
 
 ::selection {
-  background: rgba(255, 107, 157, 0.3);
+  background: color-mix(in srgb, var(--primary-start) 30%, transparent);
   color: white;
+}
+
+/* Theme-specific particle effects */
+.theme-particles {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.theme-particle {
+  position: absolute;
+  animation: float-particle 10s ease-in-out infinite;
+  opacity: 0.15;
+  font-size: 2rem;
+}
+
+@keyframes float-particle {
+  0%, 100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-30px) translateX(20px) rotate(90deg);
+  }
+  50% {
+    transform: translateY(-50px) translateX(-10px) rotate(180deg);
+  }
+  75% {
+    transform: translateY(-30px) translateX(-20px) rotate(270deg);
+  }
 }
