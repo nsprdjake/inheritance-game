@@ -54,15 +54,11 @@ export default function CreateQuestPage() {
       }
 
       // Get or create legacy account
-      let { data: legacyAccount, error: accountError } = await supabase
+      let { data: legacyAccount } = await supabase
         .from('legacy_accounts')
         .select('*')
         .eq('benefactor_id', user.id)
-        .maybeSingle();
-
-      if (accountError) {
-        console.error('Legacy account query error:', accountError);
-      }
+        .single();
 
       if (!legacyAccount) {
         // Create first legacy account
@@ -89,18 +85,14 @@ export default function CreateQuestPage() {
         if (beneficiariesData) setBeneficiaries(beneficiariesData);
 
         // Check if we have an active quest in progress
-        const { data: existingQuest, error: questError } = await supabase
+        const { data: existingQuest } = await supabase
           .from('legacy_quests')
           .select('*, legacy_milestones(*)')
           .eq('legacy_account_id', legacyAccount.id)
           .eq('status', 'draft')
           .order('created_at', { ascending: false })
           .limit(1)
-          .maybeSingle();
-
-        if (questError) {
-          console.error('Quest query error:', questError);
-        }
+          .single();
 
         if (existingQuest) {
           setQuest(existingQuest);
